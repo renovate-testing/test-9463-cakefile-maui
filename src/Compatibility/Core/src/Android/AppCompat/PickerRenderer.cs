@@ -206,6 +206,7 @@ namespace Microsoft.Maui.Controls.Compatibility.Platform.Android.AppCompat
 
 		protected override EditText EditText => Control;
 
+		[PortHandler]
 		protected override void UpdateTitleColor()
 		{
 			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());

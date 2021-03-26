@@ -143,7 +143,7 @@ namespace Maui.Controls.Sample.Pages
 				"Japanese Macaque"
 			};
 
-			var picker = new Picker { Title = "Select a monkey" };
+			var picker = new Picker { Title = "Select a monkey", TitleColor = Color.Red };
 
 			picker.ItemsSource = monkeyList;
 			verticalStack.Add(picker);

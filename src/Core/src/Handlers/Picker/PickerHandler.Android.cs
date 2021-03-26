@@ -2,12 +2,17 @@
 using System.Collections.Specialized;
 using System.Linq;
 using Android.App;
+using Android.Content.Res;
+using Android.Text;
+using Android.Text.Style;
 using AResource = Android.Resource;
 
 namespace Microsoft.Maui.Handlers
 {
 	public partial class PickerHandler : AbstractViewHandler<IPicker, MauiPicker>
 	{
+		static ColorStateList? DefaultTitleColors { get; set; }
+
 		AlertDialog? _dialog;
 
 		protected override MauiPicker CreateNativeView() =>
@@ -34,9 +39,22 @@ namespace Microsoft.Maui.Handlers
 
 			base.DisconnectHandler(nativeView);
 		}
+
+		protected override void SetupDefaults(MauiPicker nativeView)
+		{
+			base.SetupDefaults(nativeView);
+
+			DefaultTitleColors = nativeView.HintTextColors;
+		}
+
 		public static void MapTitle(PickerHandler handler, IPicker picker)
 		{
 			handler.TypedNativeView?.UpdateTitle(picker);
+		}
+
+		public static void MapTitleColor(PickerHandler handler, IPicker picker)
+		{
+			handler.TypedNativeView?.UpdateTitleColor(picker, DefaultTitleColors);
 		}
 
 		public static void MapSelectedIndex(PickerHandler handler, IPicker picker)
@@ -75,7 +93,16 @@ namespace Microsoft.Maui.Handlers
 			{
 				using (var builder = new AlertDialog.Builder(Context))
 				{
-					builder.SetTitle(VirtualView.Title ?? string.Empty);
+					if (VirtualView.TitleColor == Color.Default)
+					{
+						builder.SetTitle(VirtualView.Title ?? string.Empty);
+					}
+					else
+					{
+						var title = new SpannableString(VirtualView.Title ?? string.Empty);
+						title.SetSpan(new ForegroundColorSpan(VirtualView.TitleColor.ToNative()), 0, title.Length(), SpanTypes.ExclusiveExclusive);
+						builder.SetTitle(title);
+					}
 
 					string[] items = VirtualView.Items.ToArray();
 

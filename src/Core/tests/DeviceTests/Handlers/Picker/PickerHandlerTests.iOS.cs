@@ -1,40 +1,32 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Maui.DeviceTests.Stubs;
 using Microsoft.Maui.Handlers;
-using Xunit;
 
 namespace Microsoft.Maui.DeviceTests
 {
 	public partial class PickerHandlerTests
 	{
+		[Fact(DisplayName = "Title Color Initializes Correctly")]
+		public async Task TitleColorInitializesCorrectly()
+		{
+			var picker = new PickerStub
+			{
+				Title = "Select an Item",
+				TitleColor = Color.CadetBlue
+			};
+
+			await ValidateNativeTitleColor(picker, picker.TitleColor);
+		}
+
 		MauiPicker GetNativePicker(PickerHandler pickerHandler) =>
 			(MauiPicker)pickerHandler.View;
 
-		string GetNativeTitle(PickerHandler pickerHandler) =>
-			GetNativePicker(pickerHandler).Text;
-
-		string GetNativeText(PickerHandler pickerHandler) =>
-			 GetNativePicker(pickerHandler).Text;
-
-		async Task ValidateNativeItemsSource(IPicker picker, int itemsCount)
+		Task ValidateNativeTitleColor(IPicker picker, Color color)
 		{
-			var expected = await GetValueAsync(picker, handler =>
+			return InvokeOnMainThreadAsync(() =>
 			{
-				var pickerView = GetNativePicker(handler).UIPickerView;
-				var model = (PickerSource)pickerView.Model;
-				return model.GetRowsInComponent(pickerView, 0);
+				return GetNativePicker(CreateHandler(picker)).AssertContainsColor(color);
 			});
-			Assert.Equal(expected, itemsCount);
-		}
-
-		async Task ValidateNativeSelectedIndex(IPicker slider, int selectedIndex)
-		{
-			var expected = await GetValueAsync(slider, handler =>
-			{
-				var pickerView = GetNativePicker(handler).UIPickerView;
-				var model = (PickerSource)pickerView.Model;
-				return model.SelectedIndex;
-			});
-			Assert.Equal(expected, selectedIndex);
 		}
 	}
 }
