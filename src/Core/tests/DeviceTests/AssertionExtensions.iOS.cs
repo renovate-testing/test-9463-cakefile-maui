@@ -215,6 +215,24 @@ namespace Microsoft.Maui.DeviceTests
 			return kerning.DoubleValue;
 		}
 
+		public static UIColor GetForegroundColor(this NSAttributedString text)
+		{
+			if (text == null)
+				return UIColor.Clear;
+
+			var value = text.GetAttribute(UIStringAttributeKey.ForegroundColor, 0, out var range);
+
+			if (value == null)
+				return UIColor.Clear;
+
+			Assert.Equal(0, range.Location);
+			Assert.Equal(text.Length, range.Length);
+
+			var kerning = Assert.IsType<UIColor>(value);
+
+			return kerning;
+		}
+
 		public static void AssertHasUnderline(this NSAttributedString attributedString)
 		{
 			var value = attributedString.GetAttribute(UIStringAttributeKey.UnderlineStyle, 0, out var range);
